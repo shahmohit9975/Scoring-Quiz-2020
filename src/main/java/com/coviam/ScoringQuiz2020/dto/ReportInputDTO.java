@@ -10,5 +10,4 @@ import lombok.ToString;
 public class ReportInputDTO {
     private String userID;
     private String contestId;
-    private boolean contestType;
 }

@@ -13,7 +13,7 @@ import java.util.Map;
 public class StaticContestSubmitDTO {
     private String userID;
     private String contestId;
-    private List<QuestionAnsDTO> questionAnsDTOList;
+    private List<StaticContesQuestionsAndAnswerDTO> staticContesQuestionsAndAnswersDTO;
     private int noOfskips;
-    private int starting;
+
 }

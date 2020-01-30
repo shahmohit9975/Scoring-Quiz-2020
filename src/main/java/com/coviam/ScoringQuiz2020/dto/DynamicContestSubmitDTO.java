@@ -14,5 +14,6 @@ public class DynamicContestSubmitDTO {
     private String contestId;
     private String questionId;
     private String answer;
+    //why do you need this?
     private int timetaken;
 }

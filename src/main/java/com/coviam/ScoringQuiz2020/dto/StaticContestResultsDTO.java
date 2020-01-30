@@ -10,7 +10,6 @@ import java.util.List;
 @Setter
 @ToString
 public class StaticContestResultsDTO {
-
     private int noOfSkipsAllowed;
     private List<QuestionsDTO> questionsDTOList;
 }

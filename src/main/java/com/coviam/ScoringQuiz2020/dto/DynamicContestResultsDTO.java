@@ -9,5 +9,5 @@ import lombok.ToString;
 @Setter
 public class DynamicContestResultsDTO {
     private String questionId;
-    private String answers;
+    private String answer;
 }

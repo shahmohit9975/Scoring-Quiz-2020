@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface ScoreRepository extends MongoRepository<Scoring, String> {
     List<Scoring> findByUserIDAndContestIdAndContestType(String userID, String contestId, boolean b);
+
+    List<Scoring> findTop10ByContestIdAndContestTypeOrderByPointsDescTimetakenAsc(String contestId, boolean b);
+
+    List<Scoring> findByContestIdAndContestTypeOrderByPointsDescTimetakenAsc(String contestId, boolean b);
 }

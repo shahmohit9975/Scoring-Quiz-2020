@@ -13,9 +13,10 @@ public class Scoring {
 
     @Id
     private String scoringId;
-    private String userID;
     private String contestId;
+    private String userID;
     private int points;
+    private int timetaken;
     private boolean contestType;
     private int noOfSkips;
     private int correctAnswer;

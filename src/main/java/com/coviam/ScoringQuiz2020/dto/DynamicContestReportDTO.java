@@ -8,7 +8,8 @@ import lombok.ToString;
 @Getter
 @ToString
 public class DynamicContestReportDTO {
-    private String dynamicContestReportId;
+//    private String dynamicContestReportId;
+    private String _id;
     private String userId;
     private String contestId;
     private int points;
@@ -16,5 +17,7 @@ public class DynamicContestReportDTO {
     private int wrongAnsCount;
     private int easyCount;
     private int mediumCount;
+    private boolean attend = true;
     private int difficultCount;
+    private int rank;
 }

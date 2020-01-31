@@ -12,5 +12,9 @@ import java.util.List;
 public interface DynamicContestReportRepository extends MongoRepository<DynamicContestReport, String> {
     List<DynamicContestReportDTO> findByContestIdAndUserId(String contestId, String userId);
 
-    List<DynamicContestReportDTO> findByContestIdOrderByPointsDesc(String contestId);
+    List<DynamicContestReport> findByContestIdOrderByPointsDesc(String contestId);
+
+    List<DynamicContestReportDTO> findByContestId(String contestId);
+
+    List<DynamicContestReportDTO> findTop10ByContestIdOrderByRankAsc(String contestId);
 }

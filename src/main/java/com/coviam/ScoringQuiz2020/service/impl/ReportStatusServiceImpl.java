@@ -129,19 +129,29 @@ public class ReportStatusServiceImpl implements ReportStatusService {
     @Override
     public boolean checkOrGenerateDynamicContestReport(String contestId) {
         List<ReportStatus> reportStatusList = reportStatusRepository.findByContestIdAndContestType(contestId, false);
-
         if (reportStatusList != null && reportStatusList.size() > 0) {
             return true;
         } else {
 
             //TODO : get List<QuestionDTO> questions by contestId
-            List<QuestionDTO> questionDTOS = new ArrayList<QuestionDTO>();
+            final String uri = "https://api.myjson.com/bins/181asq";
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<QUestionsDTO> responseEntity = restTemplate.exchange(
+                    uri,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<QUestionsDTO>() {
+                    });
+            QUestionsDTO staticContestResultsDTO = responseEntity.getBody();
+            List<QuestionDTO> questionDTOS = staticContestResultsDTO.getQuestionDTOList();
             for (QuestionDTO questionDTO : questionDTOS) {
                 Date date = new Date();
                 int points = 105;
                 List<DynamicContestSubmitDTO> dynamicContestSubmitDTOS = dynamicContestSubmitRepository.findByContestIdAndQuestionIdAndSubmittedAnsOrderByDateAndTimeAsc(contestId, questionDTO.getQuestionId(), questionDTO.getAnswers());
                 for (DynamicContestSubmitDTO obj : dynamicContestSubmitDTOS) {
                     List<DynamicContestReportDTO> dynamicContestReportDTOS = dynamicContestReportRepository.findByContestIdAndUserId(contestId, obj.getUserId());
+
                     if (obj.getDateAndTime() != date) {
                         if (points != 0) {
                             points -= 5;
@@ -149,8 +159,7 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                         date = obj.getDateAndTime();
                     }
                     if (dynamicContestReportDTOS != null && dynamicContestReportDTOS.size() > 0) {
-                        DynamicContestReport dynamicContestReport = new DynamicContestReport();
-                        BeanUtils.copyProperties(dynamicContestReportDTOS.get(0), dynamicContestReport);
+                        DynamicContestReport dynamicContestReport = dynamicContestReportRepository.findById(dynamicContestReportDTOS.get(0).get_id()).get();
                         dynamicContestReport.setCorrectAnsCount(dynamicContestReport.getCorrectAnsCount() + 1);
                         if (questionDTO.getDifficultyLevel().toLowerCase().equals("easy"))
                             dynamicContestReport.setEasyCount(dynamicContestReport.getEasyCount() + 1);
@@ -158,10 +167,9 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                             dynamicContestReport.setMediumCount(dynamicContestReport.getMediumCount() + 1);
                         else if (questionDTO.getDifficultyLevel().toLowerCase().equals("difficult"))
                             dynamicContestReport.setDifficultCount(dynamicContestReport.getDifficultCount() + 1);
-                        dynamicContestReport.setPoints(points);
+                        dynamicContestReport.setPoints(dynamicContestReport.getPoints() + points);
                         dynamicContestReportRepository.save(dynamicContestReport);
                     } else {
-
                         DynamicContestReport dynamicContestReport = new DynamicContestReport();
                         BeanUtils.copyProperties(obj, dynamicContestReport);
                         dynamicContestReport.setCorrectAnsCount(1);
@@ -174,29 +182,28 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                         dynamicContestReport.setPoints(points);
                         dynamicContestReportRepository.save(dynamicContestReport);
                     }
-
                 }
             }
+            ReportStatus reportStatus = new ReportStatus();
+            reportStatus.setContestId(contestId);
+            reportStatus.setContestType(false);
+            reportStatusRepository.save(reportStatus);
         }
-        return false;
+        return true;
     }
-
     @Override
     public boolean addRankForDynamicContest(String contestId) {
-
-        List<DynamicContestReportDTO> dynamicContestReportDTOS = dynamicContestReportRepository.findByContestIdOrderByPointsDesc(contestId);
+        List<DynamicContestReport> dynamicContestReportList = dynamicContestReportRepository.findByContestIdOrderByPointsDesc(contestId);
         int rank = 0;
         int points = -1;
         boolean change = true;
-        for (DynamicContestReportDTO obj : dynamicContestReportDTOS) {
+        for (DynamicContestReport obj : dynamicContestReportList) {
             if (obj.getPoints() != points) {
                 rank++;
                 points = obj.getPoints();
             }
-            DynamicContestReport dynamicContestReport = new DynamicContestReport();
-            BeanUtils.copyProperties(obj, dynamicContestReport);
-            dynamicContestReport.setRank(rank);
-            dynamicContestReportRepository.save(dynamicContestReport);
+            obj.setRank(rank);
+            dynamicContestReportRepository.save(obj);
         }
         return true;
     }

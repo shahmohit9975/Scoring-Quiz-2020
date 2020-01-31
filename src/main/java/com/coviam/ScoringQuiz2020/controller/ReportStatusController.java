@@ -33,11 +33,12 @@ public class ReportStatusController {
     public ResponseEntity<?> checkOrGenerateDynamicContestReport(@Valid @RequestBody GenerateReportDTO generateReportDTO) {
         boolean status1 = reportStatusService.checkOrGenerateDynamicContestReport(generateReportDTO.getContestId());
         boolean status2 = reportStatusService.addRankForDynamicContest(generateReportDTO.getContestId());
+        System.out.println(status1);
+        System.out.println(status2);
         StatusDTO statusDTO = new StatusDTO();
         if (status1 && status2) {
             statusDTO.setStatus(true);
         }
-
         return new ResponseEntity<>(statusDTO, HttpStatus.OK);
     }
 }

@@ -30,7 +30,7 @@ public class StaticContestReportServiceImpl implements StaticContestReportServic
             list.add(staticContestReportDTO);
         }
 
-        List<StaticContestReportDTO> results = staticContestReportRepository.findTop10ByContestIdOrderByPointsDescTotalTimeTakenAscCorrectAnsCountDescNoOfSkipsAsc(contestId);
+        List<StaticContestReportDTO> results = staticContestReportRepository.findTop10ByContestIdOrderByRankAsc(contestId);
         list.addAll(results);
         return list;
     }

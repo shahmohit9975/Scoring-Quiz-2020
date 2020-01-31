@@ -22,5 +22,6 @@ public class StaticContestReport {
     private int easyCount;
     private int mediumCount;
     private int difficultCount;
-    private int totalTimeTaken;
+    private long totalTimeTaken;
+    private int rank;
 }

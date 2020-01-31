@@ -4,6 +4,7 @@ import com.coviam.ScoringQuiz2020.document.ReportStatus;
 import com.coviam.ScoringQuiz2020.document.StaticContestReport;
 import com.coviam.ScoringQuiz2020.dto.QuestionDTO;
 import com.coviam.ScoringQuiz2020.dto.StaticContesQuestionsAndAnswerDTO;
+import com.coviam.ScoringQuiz2020.dto.StaticContestReportDTO;
 import com.coviam.ScoringQuiz2020.dto.StaticContestSubmitDTO;
 import com.coviam.ScoringQuiz2020.repository.ReportStatusRepository;
 import com.coviam.ScoringQuiz2020.repository.StaticContestReportRepository;
@@ -52,7 +53,7 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                 int easyCount = 0;
                 int mediumCount = 0;
                 int difficultCount = 0;
-                int totalTimeTaken = 0;
+                long totalTimeTaken = 0;
 
                 if (obj.getNoOfskips() == 0) {
                     points += 5;
@@ -85,6 +86,7 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                 staticContestReport.setWrongAnsCount(wrongAnsCount);
                 staticContestReport.setTotalTimeTaken(totalTimeTaken);
                 staticContestReportRepository.save(staticContestReport);
+
             }
             ReportStatus reportStatus = new ReportStatus();
             reportStatus.setContestId(contestId);
@@ -92,5 +94,19 @@ public class ReportStatusServiceImpl implements ReportStatusService {
             reportStatusRepository.save(reportStatus);
         }
         return true;
+    }
+
+    @Override
+    public boolean addRank(String contestId) {
+        List<StaticContestReportDTO> staticContestReportDTOS = staticContestReportRepository.findByContestIdOrderByPointsDescTotalTimeTakenAscCorrectAnsCountDescNoOfSkipsAsc(contestId);
+        int rank = 0;
+        for (StaticContestReportDTO obj : staticContestReportDTOS) {
+            StaticContestReport staticContestReport = new StaticContestReport();
+            BeanUtils.copyProperties(obj, staticContestReport);
+            staticContestReport.setRank(rank++);
+            staticContestReportRepository.save(staticContestReport);
+        }
+        return true;
+
     }
 }

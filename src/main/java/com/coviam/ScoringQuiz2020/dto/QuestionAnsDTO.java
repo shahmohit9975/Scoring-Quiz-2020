@@ -12,6 +12,6 @@ import java.util.Date;
 public class QuestionAnsDTO {
     private String questionId;
     private String submitteAnswer;
-    private int timetaken;
+    private long timetaken;
     private Date dateAndTime;
 }

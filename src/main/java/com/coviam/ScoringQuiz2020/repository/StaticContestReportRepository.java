@@ -11,5 +11,7 @@ import java.util.List;
 public interface StaticContestReportRepository extends MongoRepository<StaticContestReport, String> {
     List<StaticContestReportDTO> findByContestIdAndUserId(String contestId, String userID);
 
-    List<StaticContestReportDTO> findTop10ByContestIdOrderByPointsDescTotalTimeTakenAscCorrectAnsCountDescNoOfSkipsAsc(String contestId);
+    List<StaticContestReportDTO> findByContestIdOrderByPointsDescTotalTimeTakenAscCorrectAnsCountDescNoOfSkipsAsc(String contestId);
+
+    List<StaticContestReportDTO> findTop10ByContestIdOrderByRankAsc(String contestId);
 }

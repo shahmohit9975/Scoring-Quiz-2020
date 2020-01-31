@@ -14,6 +14,6 @@ import java.util.Date;
 public class StaticContesQuestionsAndAnswerDTO {
     private String questionId;
     private String submittedAns;
-    private int timetaken;
+    private long timetaken;
     private Date dateAndTime;
 }

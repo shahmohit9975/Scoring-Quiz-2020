@@ -10,6 +10,6 @@ import lombok.ToString;
 public class ReportOutputDTO {
     private String userID;
     private int points;
-    private int timetaken;
+    private long timetaken;
     private int rank;
 }

@@ -17,8 +17,11 @@ public class DynamicContestSubmit {
     @Id
     private String dynamicContestSubmitId;
     private String userId;
+    private String contestId;
     private String questionId;
     private String submittedAns;
-    private String contestId;
     private Date dateAndTime;
+    public void setDateAndTime(Date dateAndTime) {
+        this.dateAndTime = new Date();
+    }
 }

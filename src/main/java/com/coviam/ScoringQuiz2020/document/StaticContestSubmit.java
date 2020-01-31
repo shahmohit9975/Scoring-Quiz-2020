@@ -25,7 +25,6 @@ public class StaticContestSubmit {
     private int noOfSkips;
     private List<StaticContesQuestionsAndAnswerDTO> staticContesQuestionsAndAnswersDTO;
     private Date dateAndTime;
-
     public void setDateAndTime(Date dateAndTime) {
         this.dateAndTime = new Date();
     }

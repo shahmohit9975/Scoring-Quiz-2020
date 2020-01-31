@@ -21,7 +21,18 @@ public class ReportStatusController {
     @PostMapping(path = "/static")
     public ResponseEntity<?> checkOrGenerateStaticContestReport(@Valid @RequestBody GenerateReportDTO generateReportDTO) {
         boolean status1 = reportStatusService.checkOrGenerateStaticContestReport(generateReportDTO.getContestId());
-        boolean status2 = reportStatusService.addRank(generateReportDTO.getContestId());
+        boolean status2 = reportStatusService.addRankForStaticContest(generateReportDTO.getContestId());
+        StatusDTO statusDTO = new StatusDTO();
+        if (status1 && status2) {
+            statusDTO.setStatus(true);
+        }
+        return new ResponseEntity<>(statusDTO, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/dynamic")
+    public ResponseEntity<?> checkOrGenerateDynamicContestReport(@Valid @RequestBody GenerateReportDTO generateReportDTO) {
+        boolean status1 = reportStatusService.checkOrGenerateDynamicContestReport(generateReportDTO.getContestId());
+        boolean status2 = reportStatusService.addRankForDynamicContest(generateReportDTO.getContestId());
         StatusDTO statusDTO = new StatusDTO();
         if (status1 && status2) {
             statusDTO.setStatus(true);

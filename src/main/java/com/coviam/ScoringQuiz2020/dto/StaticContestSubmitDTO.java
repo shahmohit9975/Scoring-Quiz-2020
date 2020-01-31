@@ -11,9 +11,9 @@ import java.util.Map;
 @Setter
 @ToString
 public class StaticContestSubmitDTO {
-    private String userID;
+    private String userId;
     private String contestId;
     private List<StaticContesQuestionsAndAnswerDTO> staticContesQuestionsAndAnswersDTO;
-    private int noOfskips;
+    private int noOfSkips;
 
 }

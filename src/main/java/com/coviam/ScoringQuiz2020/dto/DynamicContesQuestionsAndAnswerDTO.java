@@ -4,16 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
-import java.util.List;
-
-@Setter
 @Getter
+@Setter
 @ToString
-public class DynamicContestSubmitDTO {
-    private String userId;
-    private String contestId;
+public class DynamicContesQuestionsAndAnswerDTO {
     private String questionId;
     private String submittedAns;
-    private Date dateAndTime;
 }

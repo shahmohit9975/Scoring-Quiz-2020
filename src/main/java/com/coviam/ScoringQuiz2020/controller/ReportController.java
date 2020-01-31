@@ -23,9 +23,15 @@ public class ReportController {
     @Autowired
     StaticContestReportService staticContestReportService;
 
-    @PostMapping(path = "/static/get")
-    public ResponseEntity<?> getStaticContestReport(@Valid @RequestBody ReportInputDTO reportInputDTO) {
-        List<StaticContestReportDTO> StaticContestReportDTO = staticContestReportService.getReport(reportInputDTO.getContestId(), reportInputDTO.getUserID());
+    @PostMapping(path = "/static/user/get")
+    public ResponseEntity<?> getStaticContestUserReport(@Valid @RequestBody ReportInputDTO reportInputDTO) {
+        List<StaticContestReportDTO> StaticContestReportDTO = staticContestReportService.getReportForUser(reportInputDTO.getContestId(), reportInputDTO.getUserId());
+        return new ResponseEntity<>(StaticContestReportDTO, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/static/master/get")
+    public ResponseEntity<?> getStaticContesMastertReport(@Valid @RequestBody ReportInputDTO reportInputDTO) {
+        List<StaticContestReportDTO> StaticContestReportDTO = staticContestReportService.getReportForMaster(reportInputDTO.getContestId());
         return new ResponseEntity<>(StaticContestReportDTO, HttpStatus.OK);
     }
 }

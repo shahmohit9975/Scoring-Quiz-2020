@@ -8,7 +8,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ReportOutputDTO {
-    private String userID;
+    private String userId;
     private int points;
     private long timetaken;
     private int rank;

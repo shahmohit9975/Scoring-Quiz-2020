@@ -6,6 +6,7 @@ import com.coviam.ScoringQuiz2020.document.StaticContestReport;
 import com.coviam.ScoringQuiz2020.dto.*;
 import com.coviam.ScoringQuiz2020.repository.*;
 import com.coviam.ScoringQuiz2020.service.ReportStatusService;
+import com.coviam.ScoringQuiz2020.service.UserRecordsService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,9 @@ public class ReportStatusServiceImpl implements ReportStatusService {
 
     @Autowired
     DynamicContestReportRepository dynamicContestReportRepository;
+
+    @Autowired
+    UserRecordsService userRecordsService;
 
     @Value("${spring.staticContest.questionAnsDTO.url}")
     private String staticContestUri;
@@ -139,6 +143,7 @@ public class ReportStatusServiceImpl implements ReportStatusService {
 //            StatusDTO responseMessage = restTemplate2.postForObject(
 //                    userRecordsUri, userRecordsDTOS, StatusDTO.class
 //            );
+            userRecordsService.updateRecords(userRecordsDTOS);
         }
         return true;
     }
@@ -246,6 +251,7 @@ public class ReportStatusServiceImpl implements ReportStatusService {
 //            StatusDTO responseMessage = restTemplate2.postForObject(
 //                    userRecordsUri, userRecordsDTOS, StatusDTO.class
 //            );
+            userRecordsService.updateRecords(userRecordsDTOS);
         }
         return true;
     }

@@ -8,6 +8,7 @@ import com.coviam.ScoringQuiz2020.repository.*;
 import com.coviam.ScoringQuiz2020.service.ReportStatusService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,14 @@ public class ReportStatusServiceImpl implements ReportStatusService {
     @Autowired
     DynamicContestReportRepository dynamicContestReportRepository;
 
+    @Value("${spring.staticContest.questionAnsDTO.url}")
+    private String staticContestUri;
+    @Value("${spring.dynamicContest.questionAnsDTO.url}")
+    private String dynamicContestUri;
+    @Value("${spring.contest.mostAnsweredQuestionCount.url}")
+    private String mostAnsweredQuestionCountUri;
+    @Value("${spring.contest.userRecords.url}")
+    private String userRecordsUri;
 
     @Override
     public boolean checkOrGenerateStaticContestReport(String contestId) {
@@ -42,25 +51,21 @@ public class ReportStatusServiceImpl implements ReportStatusService {
             return true;
         } else {
             List<StaticContestSubmitDTO> staticContestSubmitDTOS = staticContestSubmitRepository.findByContestId(contestId);
-            // https://api.myjson.com/bins/jdycq
             //TODO : get List<QuestionDTO> questions by contestId
-
-
-            final String uri = "https://api.myjson.com/bins/181asq";
             RestTemplate restTemplate = new RestTemplate();
-
-            ResponseEntity<QUestionsDTO> responseEntity = restTemplate.exchange(
-                    uri,
+            ResponseEntity<List<QuestionDTO>> responseEntity = restTemplate.exchange(
+                    staticContestUri,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<QUestionsDTO>() {
+                    new ParameterizedTypeReference<List<QuestionDTO>>() {
                     });
-            QUestionsDTO staticContestResultsDTO = responseEntity.getBody();
-            System.out.println("======>" + staticContestResultsDTO.getQuestionDTOList());
-            List<QuestionDTO> questionDTOS = staticContestResultsDTO.getQuestionDTOList();
+            List<QuestionDTO> questionDTOS = responseEntity.getBody();
+            Map<String, Integer> correctAnswerQuestionIds = new HashMap<String, Integer>();
             Map<String, QuestionDTO> map = new HashMap<String, QuestionDTO>();
+            List<UserRecordsDTO> userRecordsDTOS = new ArrayList<UserRecordsDTO>();
             for (QuestionDTO questionDTO : questionDTOS) {
                 map.put(questionDTO.getQuestionId(), questionDTO);
+                correctAnswerQuestionIds.put(questionDTO.getQuestionId(), 0);
             }
             for (StaticContestSubmitDTO obj : staticContestSubmitDTOS) {
                 StaticContestReport staticContestReport = new StaticContestReport();
@@ -76,10 +81,13 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                 if (obj.getNoOfSkips() == 0) {
                     points += 5;
                 }
+
+
                 for (StaticContesQuestionsAndAnswerDTO staticContesQuestionsAndAnswerDTO : obj.getStaticContesQuestionsAndAnswersDTO()) {
                     QuestionDTO questionDTO = map.get(staticContesQuestionsAndAnswerDTO.getQuestionId());
                     if (staticContesQuestionsAndAnswerDTO.getSubmittedAns() != null && staticContesQuestionsAndAnswerDTO.getSubmittedAns().length() > 0 && staticContesQuestionsAndAnswerDTO.getSubmittedAns().toLowerCase().equals(questionDTO.getAnswers().toLowerCase())) {
 
+                        correctAnswerQuestionIds.put(staticContesQuestionsAndAnswerDTO.getQuestionId(), correctAnswerQuestionIds.get(staticContesQuestionsAndAnswerDTO.getQuestionId()) + 1);
                         if (questionDTO.getDifficultyLevel().toLowerCase().equals("easy")) {
                             points += 1;
                             easyCount++;
@@ -96,6 +104,14 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                     }
                     totalTimeTaken += staticContesQuestionsAndAnswerDTO.getTimetaken();
                 }
+                UserRecordsDTO userRecordsDTO = new UserRecordsDTO();
+                userRecordsDTO.setUserId(obj.getUserId());
+                userRecordsDTO.setCorrectAnswer(correctAnsCount);
+                userRecordsDTO.setEasy(easyCount);
+                userRecordsDTO.setMedium(mediumCount);
+                userRecordsDTO.setDifficult(difficultCount);
+                userRecordsDTO.setPoints(points);
+
                 staticContestReport.setPoints(points);
                 staticContestReport.setEasyCount(easyCount);
                 staticContestReport.setMediumCount(mediumCount);
@@ -105,11 +121,24 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                 staticContestReport.setTotalTimeTaken(totalTimeTaken);
                 staticContestReportRepository.save(staticContestReport);
 
+                userRecordsDTOS.add(userRecordsDTO);
+
             }
             ReportStatus reportStatus = new ReportStatus();
             reportStatus.setContestId(contestId);
             reportStatus.setContestType(true);
             reportStatusRepository.save(reportStatus);
+            // todo send map to questions microservice
+            //correctAnswerQuestionIds;
+//            RestTemplate restTemplate1 = new RestTemplate();
+//            StatusDTO responseMessage = restTemplate1.postForObject(
+//                    mostAnsweredQuestionCountUri, correctAnswerQuestionIds, StatusDTO.class
+//            );
+            //***************
+//            RestTemplate restTemplate2 = new RestTemplate();
+//            StatusDTO responseMessage = restTemplate2.postForObject(
+//                    userRecordsUri, userRecordsDTOS, StatusDTO.class
+//            );
         }
         return true;
     }
@@ -126,6 +155,7 @@ public class ReportStatusServiceImpl implements ReportStatusService {
 
     }
 
+
     @Override
     public boolean checkOrGenerateDynamicContestReport(String contestId) {
         List<ReportStatus> reportStatusList = reportStatusRepository.findByContestIdAndContestType(contestId, false);
@@ -134,24 +164,30 @@ public class ReportStatusServiceImpl implements ReportStatusService {
         } else {
 
             //TODO : get List<QuestionDTO> questions by contestId
-            final String uri = "https://api.myjson.com/bins/181asq";
             RestTemplate restTemplate = new RestTemplate();
 
-            ResponseEntity<QUestionsDTO> responseEntity = restTemplate.exchange(
-                    uri,
+            ResponseEntity<List<QuestionDTO>> responseEntity = restTemplate.exchange(
+                    dynamicContestUri,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<QUestionsDTO>() {
+                    new ParameterizedTypeReference<List<QuestionDTO>>() {
                     });
-            QUestionsDTO staticContestResultsDTO = responseEntity.getBody();
-            List<QuestionDTO> questionDTOS = staticContestResultsDTO.getQuestionDTOList();
+            List<QuestionDTO> questionDTOS = responseEntity.getBody();
+            Map<String, Integer> correctAnswerQuestionIds = new HashMap<String, Integer>();
+            List<UserRecordsDTO> userRecordsDTOS = new ArrayList<UserRecordsDTO>();
             for (QuestionDTO questionDTO : questionDTOS) {
+                correctAnswerQuestionIds.put(questionDTO.getQuestionId(), 0);
                 Date date = new Date();
                 int points = 105;
                 List<DynamicContestSubmitDTO> dynamicContestSubmitDTOS = dynamicContestSubmitRepository.findByContestIdAndQuestionIdAndSubmittedAnsOrderByDateAndTimeAsc(contestId, questionDTO.getQuestionId(), questionDTO.getAnswers());
-                for (DynamicContestSubmitDTO obj : dynamicContestSubmitDTOS) {
-                    List<DynamicContestReportDTO> dynamicContestReportDTOS = dynamicContestReportRepository.findByContestIdAndUserId(contestId, obj.getUserId());
 
+                for (DynamicContestSubmitDTO obj : dynamicContestSubmitDTOS) {
+
+                    UserRecordsDTO userRecordsDTO = new UserRecordsDTO();
+                    userRecordsDTO.setUserId(obj.getUserId());
+                    userRecordsDTO.setCorrectAnswer(1);
+                    List<DynamicContestReportDTO> dynamicContestReportDTOS = dynamicContestReportRepository.findByContestIdAndUserId(contestId, obj.getUserId());
+                    correctAnswerQuestionIds.put(obj.getQuestionId(), correctAnswerQuestionIds.get(obj.getQuestionId()) + 1);
                     if (obj.getDateAndTime() != date) {
                         if (points != 0) {
                             points -= 5;
@@ -161,36 +197,59 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                     if (dynamicContestReportDTOS != null && dynamicContestReportDTOS.size() > 0) {
                         DynamicContestReport dynamicContestReport = dynamicContestReportRepository.findById(dynamicContestReportDTOS.get(0).get_id()).get();
                         dynamicContestReport.setCorrectAnsCount(dynamicContestReport.getCorrectAnsCount() + 1);
-                        if (questionDTO.getDifficultyLevel().toLowerCase().equals("easy"))
+                        if (questionDTO.getDifficultyLevel().toLowerCase().equals("easy")) {
+                            userRecordsDTO.setEasy(1);
                             dynamicContestReport.setEasyCount(dynamicContestReport.getEasyCount() + 1);
-                        else if (questionDTO.getDifficultyLevel().toLowerCase().equals("medium"))
+                        } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("medium")) {
+                            userRecordsDTO.setMedium(1);
                             dynamicContestReport.setMediumCount(dynamicContestReport.getMediumCount() + 1);
-                        else if (questionDTO.getDifficultyLevel().toLowerCase().equals("difficult"))
+                        } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("difficult")) {
+                            userRecordsDTO.setDifficult(1);
                             dynamicContestReport.setDifficultCount(dynamicContestReport.getDifficultCount() + 1);
+                        }
                         dynamicContestReport.setPoints(dynamicContestReport.getPoints() + points);
+                        userRecordsDTO.setPoints(points);
                         dynamicContestReportRepository.save(dynamicContestReport);
                     } else {
                         DynamicContestReport dynamicContestReport = new DynamicContestReport();
                         BeanUtils.copyProperties(obj, dynamicContestReport);
                         dynamicContestReport.setCorrectAnsCount(1);
-                        if (questionDTO.getDifficultyLevel().toLowerCase().equals("easy"))
+                        if (questionDTO.getDifficultyLevel().toLowerCase().equals("easy")) {
+                            userRecordsDTO.setEasy(1);
                             dynamicContestReport.setEasyCount(1);
-                        else if (questionDTO.getDifficultyLevel().toLowerCase().equals("medium"))
+                        } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("medium")) {
                             dynamicContestReport.setMediumCount(1);
-                        else if (questionDTO.getDifficultyLevel().toLowerCase().equals("difficult"))
+                            userRecordsDTO.setMedium(1);
+                        } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("difficult")) {
+                            userRecordsDTO.setDifficult(1);
                             dynamicContestReport.setDifficultCount(1);
+                        }
                         dynamicContestReport.setPoints(points);
+                        userRecordsDTO.setPoints(points);
                         dynamicContestReportRepository.save(dynamicContestReport);
                     }
+                    userRecordsDTOS.add(userRecordsDTO);
                 }
             }
             ReportStatus reportStatus = new ReportStatus();
             reportStatus.setContestId(contestId);
             reportStatus.setContestType(false);
             reportStatusRepository.save(reportStatus);
+            // todo send map to questions microservice
+            //correctAnswerQuestionIds;
+//            RestTemplate restTemplate1 = new RestTemplate();
+//            StatusDTO responseMessage = restTemplate1.postForObject(
+//                    mostAnsweredQuestionCountUri, correctAnswerQuestionIds, StatusDTO.class
+//            );
+            //***************
+//            RestTemplate restTemplate2 = new RestTemplate();
+//            StatusDTO responseMessage = restTemplate2.postForObject(
+//                    userRecordsUri, userRecordsDTOS, StatusDTO.class
+//            );
         }
         return true;
     }
+
     @Override
     public boolean addRankForDynamicContest(String contestId) {
         List<DynamicContestReport> dynamicContestReportList = dynamicContestReportRepository.findByContestIdOrderByPointsDesc(contestId);

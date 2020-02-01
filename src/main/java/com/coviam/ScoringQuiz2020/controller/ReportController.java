@@ -16,7 +16,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*",allowedHeaders = "*")
 @RestController
 @RequestMapping("/report")
 public class ReportController {

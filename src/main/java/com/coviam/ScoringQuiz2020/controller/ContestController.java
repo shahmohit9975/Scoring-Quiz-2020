@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*",allowedHeaders = "*")
 @RestController
-@RequestMapping("/contest")
+@RequestMapping("/myContest")
 public class ContestController {
 
     @Autowired

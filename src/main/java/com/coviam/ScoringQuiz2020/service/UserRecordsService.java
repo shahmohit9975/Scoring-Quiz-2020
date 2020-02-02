@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface UserRecordsService {
     void updateRecords(List<UserRecordsDTO> userRecordsDTOS);
+
+    UserRecordsDTO getRecords(String userId);
 }

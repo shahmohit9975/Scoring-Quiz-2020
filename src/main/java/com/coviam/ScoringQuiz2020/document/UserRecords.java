@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @ToString
-@Document(collection = StaticContestSubmit.COLLECTION_NAME)
+@Document(collection = UserRecords.COLLECTION_NAME)
 public class UserRecords {
     public static final String COLLECTION_NAME = "userRecords";
     @Id

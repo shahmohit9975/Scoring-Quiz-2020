@@ -6,6 +6,8 @@ import com.coviam.ScoringQuiz2020.service.StaticContestReportService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,6 @@ public class StaticContestReportServiceImpl implements StaticContestReportServic
 
     @Override
     public List<StaticContestReportDTO> getReportForMaster(String contestId) {
-        return staticContestReportRepository.findByContestId(contestId);
+        return staticContestReportRepository.findByContestIdOrderByPointsDesc(contestId);
     }
 }

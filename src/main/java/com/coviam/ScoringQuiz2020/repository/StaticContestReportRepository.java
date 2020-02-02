@@ -15,5 +15,5 @@ public interface StaticContestReportRepository extends MongoRepository<StaticCon
 
     List<StaticContestReportDTO> findTop10ByContestIdOrderByRankAsc(String contestId);
 
-    List<StaticContestReportDTO> findByContestId(String contestId);
+    List<StaticContestReportDTO> findByContestIdOrderByPointsDesc(String contestId);
 }

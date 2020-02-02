@@ -18,7 +18,6 @@ public class UserRecordsServiceImpl implements UserRecordsService {
 
     @Override
     public void updateRecords(List<UserRecordsDTO> userRecordsDTOS) {
-        System.out.println("-->" + userRecordsDTOS.size());
         for (UserRecordsDTO obj : userRecordsDTOS) {
             boolean check = userRecordsRepository.existsById(obj.getUserId());
             if (check) {
@@ -29,14 +28,22 @@ public class UserRecordsServiceImpl implements UserRecordsService {
                 byId.setMedium(byId.getMedium() + obj.getMedium());
                 byId.setDifficult(byId.getDifficult() + obj.getDifficult());
                 UserRecords save = userRecordsRepository.save(byId);
-                System.out.println("check ==>" + byId.toString());
             } else {
                 UserRecords userRecords = new UserRecords();
                 BeanUtils.copyProperties(obj, userRecords);
                 UserRecords save = userRecordsRepository.save(userRecords);
-                System.out.println("==>" + save.toString());
             }
         }
+    }
+
+    @Override
+    public UserRecordsDTO getRecords(String userId) {
+        final Optional<UserRecords> byId = userRecordsRepository.findById(userId);
+        UserRecordsDTO userRecordsDTO = new UserRecordsDTO();
+        if (byId.isPresent()) {
+            BeanUtils.copyProperties(byId.get(), userRecordsDTO);
+        }
+        return userRecordsDTO;
     }
 }
 /*

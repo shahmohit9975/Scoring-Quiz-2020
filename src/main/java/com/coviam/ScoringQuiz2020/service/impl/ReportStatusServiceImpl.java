@@ -5,6 +5,7 @@ import com.coviam.ScoringQuiz2020.document.ReportStatus;
 import com.coviam.ScoringQuiz2020.document.StaticContestReport;
 import com.coviam.ScoringQuiz2020.dto.*;
 import com.coviam.ScoringQuiz2020.repository.*;
+import com.coviam.ScoringQuiz2020.service.MostAnswredQuestionService;
 import com.coviam.ScoringQuiz2020.service.ReportStatusService;
 import com.coviam.ScoringQuiz2020.service.UserRecordsService;
 import org.springframework.beans.BeanUtils;
@@ -37,6 +38,8 @@ public class ReportStatusServiceImpl implements ReportStatusService {
 
     @Autowired
     UserRecordsService userRecordsService;
+    @Autowired
+    MostAnswredQuestionService mostAnswredQuestionService;
 
     @Value("${spring.staticContest.questionAnsDTO.url}")
     private String staticContestUri;
@@ -138,6 +141,7 @@ public class ReportStatusServiceImpl implements ReportStatusService {
 //            StatusDTO responseMessage = restTemplate1.postForObject(
 //                    mostAnsweredQuestionCountUri, correctAnswerQuestionIds, StatusDTO.class
 //            );
+            mostAnswredQuestionService.save(correctAnswerQuestionIds);
             //***************
 //            RestTemplate restTemplate2 = new RestTemplate();
 //            StatusDTO responseMessage = restTemplate2.postForObject(
@@ -246,6 +250,7 @@ public class ReportStatusServiceImpl implements ReportStatusService {
 //            StatusDTO responseMessage = restTemplate1.postForObject(
 //                    mostAnsweredQuestionCountUri, correctAnswerQuestionIds, StatusDTO.class
 //            );
+            mostAnswredQuestionService.save(correctAnswerQuestionIds);
             //***************
 //            RestTemplate restTemplate2 = new RestTemplate();
 //            StatusDTO responseMessage = restTemplate2.postForObject(

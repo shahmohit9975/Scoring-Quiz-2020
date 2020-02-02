@@ -4,5 +4,5 @@ import com.coviam.ScoringQuiz2020.dto.StaticContestSubmitDTO;
 
 public interface StaticContestSubmitService {
 
-    boolean addStaticContestSubmitRecord(StaticContestSubmitDTO staticContestSubmitDTO);
+    boolean  addStaticContestSubmitRecord(StaticContestSubmitDTO staticContestSubmitDTO);
 }

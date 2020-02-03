@@ -23,4 +23,5 @@ public class DynamicContestReport {
     private int mediumCount;
     private int difficultCount;
     private int rank;
+    private String userName;
 }

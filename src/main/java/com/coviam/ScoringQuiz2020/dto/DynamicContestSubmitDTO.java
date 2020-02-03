@@ -16,4 +16,5 @@ public class DynamicContestSubmitDTO {
     private String questionId;
     private String submittedAns;
     private Date dateAndTime;
+    private String userName;
 }

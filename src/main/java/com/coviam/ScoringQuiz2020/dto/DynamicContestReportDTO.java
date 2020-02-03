@@ -20,4 +20,5 @@ public class DynamicContestReportDTO {
     private boolean attend = true;
     private int difficultCount;
     private int rank;
+    private String userName;
 }

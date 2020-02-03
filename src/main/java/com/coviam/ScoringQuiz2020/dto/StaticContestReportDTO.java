@@ -22,4 +22,5 @@ public class StaticContestReportDTO {
     private long totalTimeTaken;
     private boolean attend = true;
     private int rank;
+    private String userName;
 }

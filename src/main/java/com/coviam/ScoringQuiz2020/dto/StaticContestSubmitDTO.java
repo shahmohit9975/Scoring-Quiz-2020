@@ -15,5 +15,5 @@ public class StaticContestSubmitDTO {
     private String contestId;
     private List<StaticContesQuestionsAndAnswerDTO> staticContesQuestionsAndAnswersDTO;
     private int noOfSkips;
-
+    private String userName;
 }

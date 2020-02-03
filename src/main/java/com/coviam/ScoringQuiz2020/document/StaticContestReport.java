@@ -24,4 +24,5 @@ public class StaticContestReport {
     private int difficultCount;
     private long totalTimeTaken;
     private int rank;
+    private String userName;
 }

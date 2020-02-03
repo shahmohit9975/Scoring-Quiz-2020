@@ -21,7 +21,5 @@ public class DynamicContestSubmit {
     private String questionId;
     private String submittedAns;
     private Date dateAndTime;
-    public void setDateAndTime(Date dateAndTime) {
-        this.dateAndTime = new Date();
-    }
+    private String userName;
 }

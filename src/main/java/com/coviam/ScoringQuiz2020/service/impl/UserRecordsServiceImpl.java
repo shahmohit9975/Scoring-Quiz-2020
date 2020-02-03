@@ -19,8 +19,8 @@ public class UserRecordsServiceImpl implements UserRecordsService {
     @Override
     public void updateRecords(List<UserRecordsDTO> userRecordsDTOS) {
         for (UserRecordsDTO obj : userRecordsDTOS) {
-            boolean check = userRecordsRepository.existsById(obj.getUserId());
-            if (check) {
+            Optional<UserRecords> check = userRecordsRepository.findById(obj.getUserId());
+            if (check.isPresent()) {
                 UserRecords byId = userRecordsRepository.findById(obj.getUserId()).get();
                 byId.setCorrectAnswer(byId.getCorrectAnswer() + obj.getCorrectAnswer());
                 byId.setPoints(byId.getPoints() + obj.getPoints());
@@ -29,6 +29,7 @@ public class UserRecordsServiceImpl implements UserRecordsService {
                 byId.setDifficult(byId.getDifficult() + obj.getDifficult());
                 UserRecords save = userRecordsRepository.save(byId);
             } else {
+                System.out.println("else");
                 UserRecords userRecords = new UserRecords();
                 BeanUtils.copyProperties(obj, userRecords);
                 UserRecords save = userRecordsRepository.save(userRecords);

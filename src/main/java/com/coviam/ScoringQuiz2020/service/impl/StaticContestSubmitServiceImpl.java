@@ -23,11 +23,13 @@ public class StaticContestSubmitServiceImpl implements StaticContestSubmitServic
         String contestId = staticContestSubmitDTO.getContestId();
         List<StaticContestSubmit> staticContestSubmitList = staticContestSubmitRepository.findByUserIdAndContestId(userId, contestId);
         if (staticContestSubmitList == null || staticContestSubmitList.size() == 0) {
+            System.out.println("innnnn");
             StaticContestSubmit staticContestSubmit = new StaticContestSubmit();
             BeanUtils.copyProperties(staticContestSubmitDTO, staticContestSubmit);
             staticContestSubmitRepository.save(staticContestSubmit);
             return true;
         }
+        System.out.println("after");
         StaticContestSubmit staticContestSubmit = staticContestSubmitList.get(0);
         List<StaticContesQuestionsAndAnswerDTO> staticContesQuestionsAndAnswersDTO = staticContestSubmit.getStaticContesQuestionsAndAnswersDTO();
         staticContesQuestionsAndAnswersDTO.add(staticContestSubmitDTO.getStaticContesQuestionsAndAnswersDTO().get(0));

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@CrossOrigin(origins = "*",allowedHeaders = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/myContest")
 public class ContestController {
@@ -23,6 +23,7 @@ public class ContestController {
 
     @PostMapping(path = "/static/submit")
     public ResponseEntity<?> submitStaticContest(@Valid @RequestBody StaticContestSubmitDTO staticContestSubmitDTO) {
+        System.out.println("==>" + staticContestSubmitDTO.getUserId());
         boolean status = staticContestSubmitService.addStaticContestSubmitRecord(staticContestSubmitDTO);
         StatusDTO statusDTO = new StatusDTO();
         statusDTO.setStatus(status);

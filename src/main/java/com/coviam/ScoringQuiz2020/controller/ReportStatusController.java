@@ -20,6 +20,8 @@ public class ReportStatusController {
 
     @PostMapping(path = "/static")
     public ResponseEntity<?> checkOrGenerateStaticContestReport(@Valid @RequestBody GenerateReportDTO generateReportDTO) {
+
+
         boolean status1 = reportStatusService.checkOrGenerateStaticContestReport(generateReportDTO.getContestId());
         boolean status2 = reportStatusService.addRankForStaticContest(generateReportDTO.getContestId());
         StatusDTO statusDTO = new StatusDTO();

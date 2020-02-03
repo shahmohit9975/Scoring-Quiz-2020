@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MostAnswredQuestionRepository extends MongoRepository<MostAnswredQuestion, String> {
+    Object findTop3ByOrderByCountDesc();
 }

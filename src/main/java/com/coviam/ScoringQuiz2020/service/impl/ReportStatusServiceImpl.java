@@ -52,16 +52,16 @@ public class ReportStatusServiceImpl implements ReportStatusService {
 
     @Override
     public boolean checkOrGenerateStaticContestReport(String contestId) {
-
         List<ReportStatus> reportStatusList = reportStatusRepository.findByContestIdAndContestType(contestId, true);
         if (reportStatusList != null && reportStatusList.size() > 0) {
             return true;
         } else {
+            System.out.println("contestId=>" + contestId);
             List<StaticContestSubmitDTO> staticContestSubmitDTOS = staticContestSubmitRepository.findByContestId(contestId);
             //TODO : get List<QuestionDTO> questions by contestId
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<List<QuestionDTO>> responseEntity = restTemplate.exchange(
-                    staticContestUri,
+                    staticContestUri + contestId,
                     HttpMethod.GET,
                     null,
                     new ParameterizedTypeReference<List<QuestionDTO>>() {
@@ -101,7 +101,7 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                         } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("medium")) {
                             points += 2;
                             mediumCount++;
-                        } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("difficult")) {
+                        } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("hard")) {
                             points += 3;
                             difficultCount++;
                         }
@@ -171,16 +171,17 @@ public class ReportStatusServiceImpl implements ReportStatusService {
         if (reportStatusList != null && reportStatusList.size() > 0) {
             return true;
         } else {
-
+            System.out.println("contestId=>" + contestId);
             //TODO : get List<QuestionDTO> questions by contestId
             RestTemplate restTemplate = new RestTemplate();
 
             ResponseEntity<List<QuestionDTO>> responseEntity = restTemplate.exchange(
-                    dynamicContestUri,
+                    dynamicContestUri + contestId,
                     HttpMethod.GET,
                     null,
                     new ParameterizedTypeReference<List<QuestionDTO>>() {
                     });
+
             List<QuestionDTO> questionDTOS = responseEntity.getBody();
             Map<String, Integer> correctAnswerQuestionIds = new HashMap<String, Integer>();
             List<UserRecordsDTO> userRecordsDTOS = new ArrayList<UserRecordsDTO>();
@@ -212,7 +213,7 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                         } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("medium")) {
                             userRecordsDTO.setMedium(1);
                             dynamicContestReport.setMediumCount(dynamicContestReport.getMediumCount() + 1);
-                        } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("difficult")) {
+                        } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("hard")) {
                             userRecordsDTO.setDifficult(1);
                             dynamicContestReport.setDifficultCount(dynamicContestReport.getDifficultCount() + 1);
                         }
@@ -229,7 +230,7 @@ public class ReportStatusServiceImpl implements ReportStatusService {
                         } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("medium")) {
                             dynamicContestReport.setMediumCount(1);
                             userRecordsDTO.setMedium(1);
-                        } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("difficult")) {
+                        } else if (questionDTO.getDifficultyLevel().toLowerCase().equals("hard")) {
                             userRecordsDTO.setDifficult(1);
                             dynamicContestReport.setDifficultCount(1);
                         }
